@@ -61,14 +61,13 @@ class UserTickets(Resource):
         # 验证token
         msg = verify_token(token)
         if type(msg) is dict:
-            return jsonify(msg)
+            return msg
 
         # 得到该用户已购买的门票id
         ticket_ids = []
-
         for temp in msg.user_tickets:
             ticket_ids.append(temp.ticket_id)
-        # print('---------------------------', ticket_ids)
+        print('---------------------------', ticket_ids)
         tickets = []
         for id in ticket_ids:
             tickets.append(Ticket.query.filter(Ticket.id == id).first())

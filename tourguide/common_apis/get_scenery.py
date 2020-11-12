@@ -7,7 +7,7 @@
 """
 from flask import Blueprint
 from flask_restful import Resource, Api, fields, marshal_with
-from tourguide.models import Scenery, Ticket
+from tourguide.models import Scenery
 
 scenery_bp = Blueprint('scenery', __name__)
 api = Api(scenery_bp)

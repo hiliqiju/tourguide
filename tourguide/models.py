@@ -66,7 +66,7 @@ class Scenery(db.Model):
 class Ticket(db.Model):
     __tablename__ = 'ticket'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(10), nullable=False, comment='门票名称')
+    name = db.Column(db.String(100), nullable=False, comment='门票名称')
     type = db.Column(db.Enum('成人票', '儿童票'), nullable=False, comment='门票类型')
     price = db.Column(db.Float, nullable=False, comment='票价')
     user_tickets = db.relationship(
@@ -76,13 +76,15 @@ class Ticket(db.Model):
         cascade='all, delete-orphan',
         passive_deletes=True
     )
+    scen_name = db.Column(db.String(100), nullable=False, comment='所属景区')
     scenery_id = db.Column(db.Integer, db.ForeignKey('scenery.id', ondelete='CASCADE'))
 
-    def __init__(self, name: str, type: str, price: float, scenery_id: int) -> NoReturn:
+    def __init__(self, name: str, type: str, price: float, scenery_id: int, sname: str) -> NoReturn:
         self.name = name
         self.type = type
         self.price = price
         self.scenery_id = scenery_id
+        self.scen_name = sname
 
 
 class UserTicket(db.Model):

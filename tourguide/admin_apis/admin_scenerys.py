@@ -34,7 +34,7 @@ def get_put_parses():
     parses.add_argument('token', type=str, location='headers', required=True, help='无token')
     parses.add_argument('id', type=int, location='form', required=True, help='id是必须的')
     parses.add_argument('name', type=str, location='form', required=True, help='name是必须的')
-    parses.add_argument('img', type=FileStorage, location='files', required=True, help='img是必须的')
+    # parses.add_argument('img', type=FileStorage, location='files')
     parses.add_argument('site', type=str, location='form', required=True, help='site是必须的')
     parses.add_argument('grade', type=str, location='form', required=True, help='grade是必须的')
     parses.add_argument('introduce', type=str, location='form', required=True, help='introduce是必须的')
@@ -76,12 +76,13 @@ class AdminScenery(Resource):
             })
 
     def put(self):
+        print('----------put')
         args = get_put_parses()
         token = args.get('token')
         # 得到风景id, 用于更新
         id = args.get('id')
         name = args.get('name')
-        img = args.get('img')
+        # img = args.get('img')
         site = args.get('site')
         grade = args.get('grade')
         introduce = args.get('introduce')
@@ -91,11 +92,27 @@ class AdminScenery(Resource):
         if type(msg) is dict:
             return jsonify(msg)
 
-        img_name = img.filename
-        img.save(os.path.join(g.PATH, img_name))
+        # if img is not None:
+        #     img_name = img.filename  # 得到img本地路径
+        #     img.save(os.path.join(g.PATH, img.filename))  # 将img存储到本地
+        #     res = Scenery.query.filter(Scenery.id == id).update({
+        #         'name': name,
+        #         'img_name': img_name,
+        #         'site': site,
+        #         'grade': grade,
+        #         'introduce': introduce,
+        #         'open_time': open_time
+        #     })
+        # else:
+        #     res = Scenery.query.filter(Scenery.id == id).update({
+        #         'name': name,
+        #         'site': site,
+        #         'grade': grade,
+        #         'introduce': introduce,
+        #         'open_time': open_time
+        #     })
         res = Scenery.query.filter(Scenery.id == id).update({
             'name': name,
-            'img_name': img_name,
             'site': site,
             'grade': grade,
             'introduce': introduce,

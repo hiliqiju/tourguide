@@ -9,7 +9,6 @@ from flask_restful import Resource, Api, fields, marshal_with, reqparse
 from tourguide.token import verify_token
 from flask import Blueprint, jsonify
 from tourguide.models import Users
-from tourguide.extentions import db
 
 admin_users_bp = Blueprint('admin_users', __name__)
 api = Api(admin_users_bp)
@@ -49,7 +48,7 @@ class AdminUsers(Resource):
         # 验证token
         msg = verify_token(token)
         if type(msg) is dict:
-            return jsonify(msg)
+            return msg
         else:
             users = Users.query.filter(Users.username != 'admin').all()
             return {

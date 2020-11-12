@@ -7,13 +7,31 @@
 """
 from tourguide.token import verify_token
 from flask import Blueprint, jsonify
-from flask_restful import Resource, Api, reqparse
-from tourguide.models import Ticket
+from flask_restful import Resource, Api, reqparse, fields, marshal_with
+from tourguide.models import Ticket, Scenery
 from tourguide.extentions import db
 
 admin_ticket_bp = Blueprint('admin_ticket', __name__)
 api = Api(admin_ticket_bp)
 
+ticket_fields = {
+    'id': fields.Integer,
+    'name': fields.String,
+    'type': fields.String,
+    'price': fields.Float,
+    'scenery_id': fields.Integer,
+    'scen_name': fields.String
+}
+resource_fields = {
+    'code': fields.Integer,
+    'msg': fields.String,
+    'data': fields.List(fields.Nested(ticket_fields))
+}
+
+def get_parses():
+    parses = reqparse.RequestParser()
+    parses.add_argument('token', type=str, location='headers', required=True, help='无token')
+    return parses.parse_args()
 
 def get_post_parses():
     parses = reqparse.RequestParser()
@@ -44,8 +62,22 @@ def get_del_parses():
 
 
 class AdminTicket(Resource):
+    @marshal_with(resource_fields)
     def get(self):
-        ...
+        args = get_parses()
+        token = args.get('token')
+        # 验证token
+        msg = verify_token(token)
+        if type(msg) is dict:
+            return msg
+        else:
+            tickets = Ticket.query.all()
+            return {
+                'code': 200,
+                'msg': '请求成功',
+                'data': tickets
+            }
+
 
     def post(self):
         args = get_post_parses()
@@ -54,12 +86,13 @@ class AdminTicket(Resource):
         ticket_type = args.get('type')
         price = args.get('price')
         scenery_id = args.get('scenery_id')
+        scen_name = Scenery.query(Scenery.name).filter(Scenery.id==id).first()
         # 验证token
         msg = verify_token(token)
         if type(msg) is dict:
             return jsonify(msg)
 
-        db.session.add(Ticket(name, ticket_type, price, scenery_id))
+        db.session.add(Ticket(name, ticket_type, price, scenery_id, scen_name))
         return jsonify({
             'code': 201,
             'msg': '添加成功'
