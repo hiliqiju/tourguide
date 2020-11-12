@@ -86,13 +86,13 @@ class AdminTicket(Resource):
         ticket_type = args.get('type')
         price = args.get('price')
         scenery_id = args.get('scenery_id')
-        scen_name = Scenery.query(Scenery.name).filter(Scenery.id==id).first()
+        scen = Scenery.query.filter(Scenery.id==scenery_id).first()
         # 验证token
         msg = verify_token(token)
         if type(msg) is dict:
             return jsonify(msg)
 
-        db.session.add(Ticket(name, ticket_type, price, scenery_id, scen_name))
+        db.session.add(Ticket(name, ticket_type, price, scenery_id, scen.name))
         return jsonify({
             'code': 201,
             'msg': '添加成功'
